@@ -1,7 +1,7 @@
 Changes
 DB.pm
 Makefile.PL
-example.pl
+examples/example.pl
 MANIFEST
 README
 t/1.t
