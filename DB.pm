@@ -6,7 +6,7 @@ use Tree::Numbered;
 
 use DBI;
 
-our $VERSION = '1.02';
+our $VERSION = '1.02.2';
 our @ISA = qw(Tree::Numbered);
 
 my %collumn_names = (_Serial => 'serial', 
@@ -573,13 +573,27 @@ addField, removeField, setField, setFields, *getField, *getFields, *hasField, ad
 
  Please report through CPAN: 
  < http://rt.cpan.org/NoAuth/Bugs.html?Dist=Tree-Numbered-DB >
- or send mail to E<lt>bug-Tree-Numbered-DB#rt.cpan.orgE<gt> 
+ or send mail to <bug-Tree-Numbered-DB#rt.cpan.org> 
  
  For sugestions, questions and such, email me directly.
 
 =head1 SEE ALSO
 
-Tree::Numbered, Javascript::Menu, HTML::Widget::SideBar
+=over 4
+
+=item Tree::Numbered
+
+The base class.
+
+=item Tree::Numbered::Tools (by Johan Kuuse)
+
+Tools for easy handling of the tree.
+
+=item Javascript::Menu, HTML::Widget::SideBar
+
+Hierarchical widgets for web pages that are Tree::Numbered and use Tree::Numbered::DB optionally.
+
+=back
 
 =head1 AUTHOR
 
