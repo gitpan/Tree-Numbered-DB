@@ -6,11 +6,11 @@ use Tree::Numbered;
 
 use DBI;
 
-our $VERSION = '1.00';
+our $VERSION = '1.02';
 our @ISA = qw(Tree::Numbered);
 
 my %collumn_names = (_Serial => 'serial', 
-		      _Parent => 'parent',
+		     _Parent => 'parent',
 		     Value => 'name');
 
 sub _addMapping; # predeclared method.
@@ -103,7 +103,7 @@ sub new {
     foreach (@colnames) {
 	next if (exists $reserved{$_});
 	s/_col$//;
-	$fields{$_} = undef unless (exists $fields{$_});
+	$fields{$_} = undef unless (exists $fields{$_}); # Auto vivification.
     }
 
     # Create the Value field if no other field was requested:
@@ -220,7 +220,7 @@ sub read {
 	};
     # The prntnums hash is used to save calls to the DB. 
     # if a row is not a parent,
-    # there's no need to query the database about its childs.
+    # there's no need to query the database about its children.
     my %prntnums = map {$_->[0] => 1} @parents;
     delete $prntnums{0}; # or endless recursion...
 
@@ -247,7 +247,7 @@ sub recursiveTreeBuild {
     $sth->execute(($serial));
     my %rows = %{$sth->fetchall_hashref($self->getMapping('_Serial'))};
     
-    foreach my $row (keys %rows) {
+    foreach my $row (sort {$a <=> $b} keys %rows) {
 	# Note that the mappings for #self are the same as those of $newNode.
 	my %values = map { $_, $rows{$row}->{$self->getMapping($_)} } 
 	$self->getFieldNames;
@@ -441,7 +441,7 @@ sub removeField {
   my $tree = NumberedTree::DBTree->new(source_name => 'a_table', 
                                        source => $dbh);
   while (I aint sick of it) {
-  	$tree->append($newValue);
+  	$tree->append(Value => $newValue);
   }
   
   etc.
@@ -450,13 +450,15 @@ sub removeField {
 
 Tree::Numbered::DB is a child class of Tree::Numbered that supplies database tying (every change is immediately reflected in the database) and reading using tables that are built to store a tree (the structure is described below). It's basically the same as Tree::Numbered except for some methods. These, and arguments changes for inherited methods, are also described below. For the rest, please refer to the documentation for Tree::Numbered.
 
-Tree::Numbered::DB allows you to change the relations between the table and the tree, by adding and deleting fields on runtime, thus giving you a lot of flexibility in working with big tables. The mechanism for that is described above.
+Tree::Numbered::DB allows you to change the relations between the table and the tree, by adding and deleting fields on runtime, thus giving you a lot of flexibility in working with big tables. The mechanism for that is described below in short. A lot about dealing with fields can be found in the docs for Tree::Numbered.
+
+To see a working example, see example.pl in the distribution directory.
 
 =head1 CREATING A TABLE FOR THE TREE
 
 A table used by this module must have at least 2 columns: the serial number column (by default 'serial') and the parent column (default - 'parent'). There is also a default field column for the field Value ('name') if you want this field to be created. If the default names don't suit you, don't worry - you can supply different names to the constructors. 
 
-Serial numbers start from any number greater than zero and must be auto increment fields. Parent numbers of course are the serial numbers of the parent for each node - the root node B<always> takes parent number 0.
+Serial numbers start from any number greater than zero and must be in an auto-incrementing field. Parent numbers of course are the serial numbers of the parent for each node - the root node B<always> takes parent number 0.
 
  Example SQL statement to build the table (tested on MySQL):  
  create table places (serial int auto_increment primary key, 
@@ -513,11 +515,13 @@ Note that you should not add nodes to an existing tree using this method. Instea
 
 creates a new tree object from a table named I<SOURCE_NAME> that contains tree data as specified above, using a DB handle given in I<SOURCE>. The optional MAP argument takes a reference to a hash of mappings, as described in new. If you do not supply this, the defaults will be used (including the creation of the Value field). As in I<new>, you can use this argument to replace module default mappings.
 
+The data read from the DB will be ordered by the serial numbers.
+
 =back
 
 =head2 Overriden and new methods in this class.
 
-Two methods are added to this class:
+Four methods are added to this class:
 
 =over 4
 
@@ -568,14 +572,14 @@ addField, removeField, setField, setFields, *getField, *getFields, *hasField, ad
 =head1 BUGS AND OTHER ISSUES
 
  Please report through CPAN: 
- E<lt>http://rt.cpan.org/NoAuth/Bugs.html?Dist=Tree-Numbered-DBE<gt>
+ < http://rt.cpan.org/NoAuth/Bugs.html?Dist=Tree-Numbered-DB >
  or send mail to E<lt>bug-Tree-Numbered-DB#rt.cpan.orgE<gt> 
  
  For sugestions, questions and such, email me directly.
 
 =head1 SEE ALSO
 
-Tree::Numbered, Javascript::Menu
+Tree::Numbered, Javascript::Menu, HTML::Widget::SideBar
 
 =head1 AUTHOR
 

@@ -7,3 +7,5 @@ Revision history for Perl extension NumberedTree::DBTree.
 	- Changed the name.
 	- Fixed and greatly extended the fields mechanism, 
 		relying mainly on changes in Tree::Numbered.
+1.02  Wed Jan 14 morning:
+	- Added ordering by serial numbers.
